@@ -1,0 +1,360 @@
+---
+title: 'createCheckout()'
+description: 'Redirect users to PayMaya Checkout to finalize payment'
+---
+
+## Method Signature
+
+```typescript
+createCheckout(checkoutRequestObject: CreateCheckoutObject): Promise<void>
+```
+
+This method redirects the user to PayMaya Checkout, where they can finalize their payment. The method accepts a checkout request object and returns a promise that resolves when the redirect is initiated.
+
+## Parameters
+
+<ParamField path="checkoutRequestObject" type="CreateCheckoutObject" required>
+  The checkout request object containing transaction details
+
+  <Expandable title="properties">
+    <ParamField path="totalAmount" type="object" required>
+      Total amount information for the transaction
+      
+      <Expandable title="properties">
+        <ParamField path="value" type="number" required>
+          The total amount value
+        </ParamField>
+        
+        <ParamField path="currency" type="string" required>
+          Currency code (e.g., "PHP")
+        </ParamField>
+        
+        <ParamField path="details" type="object">
+          Breakdown of the total amount
+          
+          <Expandable title="properties">
+            <ParamField path="discount" type="number">
+              Discount amount
+            </ParamField>
+            
+            <ParamField path="serviceCharge" type="number">
+              Service charge amount
+            </ParamField>
+            
+            <ParamField path="shippingFee" type="number">
+              Shipping fee amount
+            </ParamField>
+            
+            <ParamField path="tax" type="number">
+              Tax amount
+            </ParamField>
+            
+            <ParamField path="subtotal" type="number">
+              Subtotal amount
+            </ParamField>
+          </Expandable>
+        </ParamField>
+      </Expandable>
+    </ParamField>
+
+    <ParamField path="buyer" type="object">
+      Buyer information
+      
+      <Expandable title="properties">
+        <ParamField path="firstName" type="string">
+          Buyer's first name
+        </ParamField>
+        
+        <ParamField path="middleName" type="string">
+          Buyer's middle name
+        </ParamField>
+        
+        <ParamField path="lastName" type="string">
+          Buyer's last name
+        </ParamField>
+        
+        <ParamField path="birthday" type="string">
+          Buyer's birthday (format: YYYY-MM-DD)
+        </ParamField>
+        
+        <ParamField path="customerSince" type="string">
+          Date when buyer became a customer (format: YYYY-MM-DD)
+        </ParamField>
+        
+        <ParamField path="sex" type="string">
+          Buyer's gender (e.g., "M" or "F")
+        </ParamField>
+        
+        <ParamField path="contact" type="object">
+          Contact information
+          
+          <Expandable title="properties">
+            <ParamField path="phone" type="string">
+              Phone number
+            </ParamField>
+            
+            <ParamField path="email" type="string">
+              Email address
+            </ParamField>
+          </Expandable>
+        </ParamField>
+        
+        <ParamField path="shippingAddress" type="object">
+          Shipping address details
+          
+          <Expandable title="properties">
+            <ParamField path="firstName" type="string" required>
+              Recipient's first name
+            </ParamField>
+            
+            <ParamField path="middleName" type="string" required>
+              Recipient's middle name
+            </ParamField>
+            
+            <ParamField path="lastName" type="string" required>
+              Recipient's last name
+            </ParamField>
+            
+            <ParamField path="phone" type="string" required>
+              Contact phone number
+            </ParamField>
+            
+            <ParamField path="email" type="string" required>
+              Contact email address
+            </ParamField>
+            
+            <ParamField path="line1" type="string">
+              Address line 1
+            </ParamField>
+            
+            <ParamField path="line2" type="string">
+              Address line 2
+            </ParamField>
+            
+            <ParamField path="city" type="string">
+              City
+            </ParamField>
+            
+            <ParamField path="state" type="string">
+              State or province
+            </ParamField>
+            
+            <ParamField path="zipCode" type="string">
+              ZIP or postal code
+            </ParamField>
+            
+            <ParamField path="countryCode" type="string">
+              Country code (e.g., "PH")
+            </ParamField>
+            
+            <ParamField path="shippingType" type="ShippingType" required>
+              Shipping type: "ST" (standard) or "SD" (same day)
+            </ParamField>
+          </Expandable>
+        </ParamField>
+        
+        <ParamField path="billingAddress" type="object">
+          Billing address details
+          
+          <Expandable title="properties">
+            <ParamField path="line1" type="string">
+              Address line 1
+            </ParamField>
+            
+            <ParamField path="line2" type="string">
+              Address line 2
+            </ParamField>
+            
+            <ParamField path="city" type="string">
+              City
+            </ParamField>
+            
+            <ParamField path="state" type="string">
+              State or province
+            </ParamField>
+            
+            <ParamField path="zipCode" type="string">
+              ZIP or postal code
+            </ParamField>
+            
+            <ParamField path="countryCode" type="string">
+              Country code (e.g., "PH")
+            </ParamField>
+          </Expandable>
+        </ParamField>
+      </Expandable>
+    </ParamField>
+
+    <ParamField path="items" type="array" required>
+      Array of items being purchased
+      
+      <Expandable title="item properties">
+        <ParamField path="name" type="string" required>
+          Item name
+        </ParamField>
+        
+        <ParamField path="quantity" type="number">
+          Item quantity
+        </ParamField>
+        
+        <ParamField path="code" type="string">
+          Item code or SKU
+        </ParamField>
+        
+        <ParamField path="description" type="string">
+          Item description
+        </ParamField>
+        
+        <ParamField path="amount" type="object">
+          Item amount details
+          
+          <Expandable title="properties">
+            <ParamField path="value" type="number" required>
+              Item amount value
+            </ParamField>
+            
+            <ParamField path="details" type="object">
+              Amount breakdown (same structure as totalAmount.details)
+            </ParamField>
+          </Expandable>
+        </ParamField>
+        
+        <ParamField path="totalAmount" type="object" required>
+          Total amount for this item (same structure as amount)
+        </ParamField>
+      </Expandable>
+    </ParamField>
+
+    <ParamField path="redirectUrl" type="object">
+      Redirect URLs for different payment outcomes
+      
+      <Expandable title="properties">
+        <ParamField path="success" type="string">
+          URL to redirect on successful payment
+        </ParamField>
+        
+        <ParamField path="failure" type="string">
+          URL to redirect on failed payment
+        </ParamField>
+        
+        <ParamField path="cancel" type="string">
+          URL to redirect on cancelled payment
+        </ParamField>
+      </Expandable>
+    </ParamField>
+
+    <ParamField path="requestReferenceNumber" type="string" required>
+      Unique reference number for this request
+    </ParamField>
+
+    <ParamField path="metadata" type="object" required>
+      Additional metadata for the transaction
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+## Returns
+
+<ResponseField name="response" type="Promise<void>">
+  The method automatically redirects the user to the PayMaya checkout page. The promise resolves when the redirect is initiated.
+</ResponseField>
+
+## Example Usage
+
+```javascript
+import paymaya from 'paymaya-js-sdk';
+
+// Initialize the SDK first
+paymaya.init('your-public-key', true);
+
+// Create checkout
+const checkoutObject = {
+  totalAmount: {
+    value: 100,
+    currency: "PHP",
+    details: {
+      discount: 0,
+      serviceCharge: 0,
+      shippingFee: 0,
+      tax: 0,
+      subtotal: 100
+    }
+  },
+  buyer: {
+    firstName: "John",
+    middleName: "Paul",
+    lastName: "Doe",
+    birthday: "1995-10-24",
+    customerSince: "1995-10-24",
+    sex: "M",
+    contact: {
+      phone: "+639181008888",
+      email: "merchant@merchantsite.com"
+    },
+    shippingAddress: {
+      firstName: "John",
+      middleName: "Paul",
+      lastName: "Doe",
+      phone: "+639181008888",
+      email: "merchant@merchantsite.com",
+      line1: "6F Launchpad",
+      line2: "Reliance Street",
+      city: "Mandaluyong City",
+      state: "Metro Manila",
+      zipCode: "1552",
+      countryCode: "PH",
+      shippingType: "ST"
+    },
+    billingAddress: {
+      line1: "6F Launchpad",
+      line2: "Reliance Street",
+      city: "Mandaluyong City",
+      state: "Metro Manila",
+      zipCode: "1552",
+      countryCode: "PH"
+    }
+  },
+  items: [
+    {
+      name: "Canvas Slip Ons",
+      quantity: 1,
+      code: "CVG-096732",
+      description: "Shoes",
+      amount: {
+        value: 100,
+        details: {
+          discount: 0,
+          serviceCharge: 0,
+          shippingFee: 0,
+          tax: 0,
+          subtotal: 100
+        }
+      },
+      totalAmount: {
+        value: 100,
+        details: {
+          discount: 0,
+          serviceCharge: 0,
+          shippingFee: 0,
+          tax: 0,
+          subtotal: 100
+        }
+      }
+    }
+  ],
+  redirectUrl: {
+    success: "https://www.merchantsite.com/success",
+    failure: "https://www.merchantsite.com/failure",
+    cancel: "https://www.merchantsite.com/cancel"
+  },
+  requestReferenceNumber: "1551191039",
+  metadata: {}
+};
+
+await paymaya.createCheckout(checkoutObject);
+```
+
+## Interface Reference
+
+For complete TypeScript interface definitions, see:
+- [CreateCheckoutObject](https://github.com/PayMaya/PayMaya-JS-SDK-v2/blob/master/src/interfaces.ts#L1-L8) in `src/interfaces.ts:1`

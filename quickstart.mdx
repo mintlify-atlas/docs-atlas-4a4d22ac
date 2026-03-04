@@ -1,80 +1,442 @@
 ---
-title: "Quickstart"
-description: "Start building awesome documentation in minutes"
+title: Quick Start
+description: Create your first payment with PayMaya JS SDK in just a few steps
 ---
 
-## Get started in three steps
+This guide will walk you through creating your first payment using the PayMaya JS SDK. We'll cover initialization, creating a simple payment, and handling the result.
 
-Get your documentation site running locally and make your first customization.
+## Prerequisites
 
-### Step 1: Set up your local environment
+Before you begin, ensure you have:
 
-<AccordionGroup>
-  <Accordion icon="copy" title="Clone your docs locally">
-    During the onboarding process, you created a GitHub repository with your docs content if you didn't already have one. You can find a link to this repository in your [dashboard](https://dashboard.mintlify.com).
-    
-    To clone the repository locally so that you can make and preview changes to your docs, follow the [Cloning a repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) guide in the GitHub docs.
-  </Accordion>
-  <Accordion icon="rectangle-terminal" title="Start the preview server">
-    1. Install the Mintlify CLI: `npm i -g mint`
-    2. Navigate to your docs directory and run: `mint dev`
-    3. Open `http://localhost:3000` to see your docs live!
-    
-    <Tip>Your preview updates automatically as you edit files.</Tip>
-  </Accordion>
-</AccordionGroup>
-
-### Step 2: Deploy your changes
-
-<AccordionGroup>
-  <Accordion icon="github" title="Install our GitHub app">
-    Install the Mintlify GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app).
-    
-    Our GitHub app automatically deploys your changes to your docs site, so you don't need to manage deployments yourself.
-</Accordion>
-<Accordion icon="palette" title="Update your site name and colors">
-    For a first change, let's update the name and colors of your docs site.
-
-    1. Open `docs.json` in your editor.
-    2. Change the `"name"` field to your project name.
-    3. Update the `"colors"` to match your brand.
-    4. Save and see your changes instantly at `http://localhost:3000`.
-
-    <Tip>Try changing the primary color to see an immediate difference!</Tip>
-  </Accordion>
-</AccordionGroup>
-
-### Step 3: Go live
-
-<Accordion icon="rocket" title="Publish your docs">
-  1. Commit and push your changes.
-  2. Your docs will update and be live in moments!
-</Accordion>
-
-## Next steps
-
-Now that you have your docs running, explore these key features:
-
-<CardGroup cols={2}>
-
-<Card title="Write Content" icon="pen-to-square" href="/essentials/markdown">
-  Learn MDX syntax and start writing your documentation.
-</Card>
-
-<Card title="Customize style" icon="palette" href="/essentials/settings">
-  Make your docs match your brand perfectly.
-</Card>
-
-<Card title="Add code examples" icon="square-code" href="/essentials/code">
-  Include syntax-highlighted code blocks.
-</Card>
-
-<Card title="API documentation" icon="code" href="/api-reference/introduction">
-  Auto-generate API docs from OpenAPI specs.
-</Card>
-
-</CardGroup>
+- Installed the PayMaya JS SDK ([installation guide](/installation))
+- A PayMaya public API key (sandbox or production)
+- Redirect URLs set up for success, failure, and cancel callbacks
 
 <Note>
-  **Need help?** See our [full documentation](https://mintlify.com/docs) or join our [community](https://mintlify.com/community).
+For testing, use sandbox mode and a sandbox public API key. You can obtain API keys from the PayMaya developer dashboard.
 </Note>
+
+## Step 1: Initialize the SDK
+
+Before using any payment methods, you must initialize the SDK with your public API key. This should be done once when your application starts.
+
+<CodeGroup>
+
+```javascript JavaScript
+import PayMayaSDK from 'paymaya-js-sdk';
+
+// Initialize with sandbox environment (recommended for development)
+PayMayaSDK.init('pk-Z0OSzLvIcOI2UIvDhdTGVVfRSSeiGStnceqwUE7n0Ah', true);
+
+// For production, set the second parameter to false
+// PayMayaSDK.init('your-production-public-key', false);
+```
+
+```typescript TypeScript
+import PayMayaSDK from 'paymaya-js-sdk';
+
+// Initialize with sandbox environment
+PayMayaSDK.init('pk-Z0OSzLvIcOI2UIvDhdTGVVfRSSeiGStnceqwUE7n0Ah', true);
+```
+
+```javascript React
+import React, { useEffect } from 'react';
+import PayMayaSDK from 'paymaya-js-sdk';
+
+function App() {
+  useEffect(() => {
+    // Initialize once when component mounts
+    PayMayaSDK.init('pk-Z0OSzLvIcOI2UIvDhdTGVVfRSSeiGStnceqwUE7n0Ah', true);
+  }, []); // Empty dependency array ensures this runs only once
+
+  return <div>Your app content</div>;
+}
+```
+
+```html Vanilla JS (CDN)
+<script src="https://unpkg.com/paymaya-js-sdk@2.0.1/dist/bundle.js"></script>
+<script>
+  // Initialize the SDK
+  PayMayaSDK.init('pk-Z0OSzLvIcOI2UIvDhdTGVVfRSSeiGStnceqwUE7n0Ah', true);
+</script>
+```
+
+</CodeGroup>
+
+<Warning>
+Never hardcode production API keys in client-side code. Use environment variables or configuration management for production deployments.
+</Warning>
+
+## Step 2: Create a Simple Payment
+
+Let's create a simple single payment transaction. This is the quickest way to accept a payment.
+
+<Steps>
+  <Step title="Prepare the payment data">
+    Create an object with the transaction details including amount, currency, reference number, and redirect URLs.
+  </Step>
+  
+  <Step title="Call createSinglePayment()">
+    Pass the payment data to the SDK's `createSinglePayment()` method.
+  </Step>
+  
+  <Step title="User redirects to PayMaya">
+    The SDK automatically redirects the user to PayMaya's payment page.
+  </Step>
+  
+  <Step title="Handle the callback">
+    After payment, the user is redirected back to your specified URLs.
+  </Step>
+</Steps>
+
+### Complete Example
+
+<CodeGroup>
+
+```javascript JavaScript
+import PayMayaSDK from 'paymaya-js-sdk';
+
+// Initialize the SDK
+PayMayaSDK.init('pk-Z0OSzLvIcOI2UIvDhdTGVVfRSSeiGStnceqwUE7n0Ah', true);
+
+// Create payment data
+const paymentData = {
+  totalAmount: {
+    value: '100',
+    currency: 'PHP'
+  },
+  requestReferenceNumber: '6319921',
+  metadata: {},
+  redirectUrl: {
+    success: 'https://yoursite.com/success',
+    failure: 'https://yoursite.com/failure',
+    cancel: 'https://yoursite.com/cancel'
+  }
+};
+
+// Create the payment (this will redirect the user)
+await PayMayaSDK.createSinglePayment(paymentData);
+```
+
+```typescript TypeScript
+import PayMayaSDK from 'paymaya-js-sdk';
+import type { CreateSinglePaymentObject } from 'paymaya-js-sdk';
+
+// Initialize the SDK
+PayMayaSDK.init('pk-Z0OSzLvIcOI2UIvDhdTGVVfRSSeiGStnceqwUE7n0Ah', true);
+
+// Create payment data with type safety
+const paymentData: CreateSinglePaymentObject = {
+  totalAmount: {
+    value: '100',
+    currency: 'PHP'
+  },
+  requestReferenceNumber: '6319921',
+  metadata: {},
+  success: 'https://yoursite.com/success',
+  failure: 'https://yoursite.com/failure',
+  cancel: 'https://yoursite.com/cancel'
+};
+
+// Create the payment
+try {
+  await PayMayaSDK.createSinglePayment(paymentData);
+} catch (error) {
+  console.error('Payment creation failed:', error);
+}
+```
+
+```javascript React Component
+import React, { useState, useEffect } from 'react';
+import PayMayaSDK from 'paymaya-js-sdk';
+
+function PaymentButton() {
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    PayMayaSDK.init('pk-Z0OSzLvIcOI2UIvDhdTGVVfRSSeiGStnceqwUE7n0Ah', true);
+  }, []);
+
+  const handlePayment = async () => {
+    setLoading(true);
+
+    const paymentData = {
+      totalAmount: {
+        value: '100',
+        currency: 'PHP'
+      },
+      requestReferenceNumber: Date.now().toString(),
+      metadata: {},
+      redirectUrl: {
+        success: `${window.location.origin}/success`,
+        failure: `${window.location.origin}/failure`,
+        cancel: `${window.location.origin}/cancel`
+      }
+    };
+
+    try {
+      await PayMayaSDK.createSinglePayment(paymentData);
+      // User will be redirected, so loading state may not be visible
+    } catch (error) {
+      console.error('Payment failed:', error);
+      setLoading(false);
+    }
+  };
+
+  return (
+    <button onClick={handlePayment} disabled={loading}>
+      {loading ? 'Processing...' : 'Pay ₱100'}
+    </button>
+  );
+}
+
+export default PaymentButton;
+```
+
+</CodeGroup>
+
+<Tip>
+Use dynamic reference numbers (like timestamps or UUIDs) to ensure each transaction is unique and traceable.
+</Tip>
+
+## Step 3: Create a Checkout Payment
+
+For a more complete e-commerce experience with item details and buyer information, use the Checkout API.
+
+```javascript
+import PayMayaSDK from 'paymaya-js-sdk';
+
+PayMayaSDK.init('pk-Z0OSzLvIcOI2UIvDhdTGVVfRSSeiGStnceqwUE7n0Ah', true);
+
+const checkoutData = {
+  totalAmount: {
+    value: 100,
+    currency: 'PHP',
+    details: {
+      discount: 0,
+      serviceCharge: 0,
+      shippingFee: 0,
+      tax: 0,
+      subtotal: 100
+    }
+  },
+  buyer: {
+    firstName: 'John',
+    lastName: 'Doe',
+    contact: {
+      phone: '+639181008888',
+      email: 'customer@example.com'
+    }
+  },
+  items: [
+    {
+      name: 'Canvas Slip Ons',
+      quantity: 1,
+      code: 'CVG-096732',
+      description: 'Shoes',
+      amount: {
+        value: 100
+      },
+      totalAmount: {
+        value: 100
+      }
+    }
+  ],
+  redirectUrl: {
+    success: 'https://yoursite.com/success',
+    failure: 'https://yoursite.com/failure',
+    cancel: 'https://yoursite.com/cancel'
+  },
+  requestReferenceNumber: '6319921',
+  metadata: {}
+};
+
+// Create checkout and redirect user
+await PayMayaSDK.createCheckout(checkoutData);
+```
+
+## Step 4: Handle Payment Results
+
+After the payment is processed, PayMaya redirects the user to one of your specified URLs.
+
+<CodeGroup>
+
+```javascript Success Page
+// success.html or Success component
+const urlParams = new URLSearchParams(window.location.search);
+const paymentId = urlParams.get('id');
+const status = urlParams.get('status');
+
+console.log('Payment successful!', { paymentId, status });
+
+// Display success message to user
+document.getElementById('message').textContent = 'Payment completed successfully!';
+```
+
+```javascript React Success Page
+import React, { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+
+function SuccessPage() {
+  const [searchParams] = useSearchParams();
+  const [paymentInfo, setPaymentInfo] = useState(null);
+
+  useEffect(() => {
+    const paymentId = searchParams.get('id');
+    const status = searchParams.get('status');
+
+    setPaymentInfo({ paymentId, status });
+
+    // Optionally verify with your backend
+    // fetch(`/api/verify-payment/${paymentId}`)
+    //   .then(res => res.json())
+    //   .then(data => console.log('Verified:', data));
+  }, [searchParams]);
+
+  return (
+    <div>
+      <h1>Payment Successful!</h1>
+      {paymentInfo && (
+        <div>
+          <p>Payment ID: {paymentInfo.paymentId}</p>
+          <p>Status: {paymentInfo.status}</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default SuccessPage;
+```
+
+</CodeGroup>
+
+<Warning>
+Always verify payment status on your server side by querying PayMaya's API. Client-side callbacks can be manipulated and should not be trusted for order fulfillment.
+</Warning>
+
+## Advanced: Credit Card Tokenization
+
+For custom payment forms where you want to collect credit card information securely, use the embedded credit card form.
+
+```javascript
+import PayMayaSDK from 'paymaya-js-sdk';
+
+// Initialize SDK
+PayMayaSDK.init('pk-MOfNKu3FmHMVHtjyjG7vhr7vFevRkWxmxYL1Yq6iFk5', true);
+
+// Get the container element
+const iframeContainer = document.getElementById('card-form-container');
+
+// Create the credit card form
+PayMayaSDK
+  .createCreditCardForm(iframeContainer, {
+    buttonText: 'Pay Now',
+    buttonColor: '#007bff',
+    buttonTextColor: '#ffffff',
+    showLogo: true
+  })
+  .addTransactionHandler((paymentTokenId) => {
+    console.log('Payment token received:', paymentTokenId);
+    // Send the token to your server to complete the payment
+  });
+```
+
+<Note>
+The credit card form is embedded in a secure iframe hosted by PayMaya, ensuring PCI compliance. You never handle raw credit card data.
+</Note>
+
+## Complete React Example
+
+Here's a complete React component demonstrating the checkout flow:
+
+```javascript
+import React, { useState, useEffect } from 'react';
+import PayMayaSDK from 'paymaya-js-sdk';
+
+function CheckoutComponent() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    // Initialize SDK on mount
+    PayMayaSDK.init('pk-Z0OSzLvIcOI2UIvDhdTGVVfRSSeiGStnceqwUE7n0Ah', true);
+  }, []);
+
+  const handleCheckout = async () => {
+    setLoading(true);
+    setError(null);
+
+    const checkoutData = {
+      totalAmount: {
+        value: 100,
+        currency: 'PHP'
+      },
+      items: [
+        {
+          name: 'Nike Footwear',
+          quantity: 1,
+          totalAmount: {
+            value: 100
+          }
+        }
+      ],
+      requestReferenceNumber: Date.now().toString(),
+      metadata: {},
+      redirectUrl: {
+        success: `${window.location.origin}/success`,
+        failure: `${window.location.origin}/failure`,
+        cancel: `${window.location.origin}/cancel`
+      }
+    };
+
+    try {
+      await PayMayaSDK.createCheckout(checkoutData);
+      // User will be redirected
+    } catch (err) {
+      console.error('Checkout failed:', err);
+      setError('Failed to create checkout. Please try again.');
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="checkout">
+      <h2>Checkout</h2>
+      {error && <div className="error">{error}</div>}
+      <button onClick={handleCheckout} disabled={loading}>
+        {loading ? 'Processing...' : 'Proceed to Payment'}
+      </button>
+    </div>
+  );
+}
+
+export default CheckoutComponent;
+```
+
+## Next Steps
+
+Now that you've created your first payment, explore more advanced features:
+
+<CardGroup cols={2}>
+  <Card title="API Reference" icon="code" href="/api-reference/initialization">
+    Explore all available methods and interfaces
+  </Card>
+  
+  <Card title="Checkout API" icon="shopping-cart" href="/api-reference/checkout">
+    Learn about the full checkout experience
+  </Card>
+  
+  <Card title="Credit Card Forms" icon="credit-card" href="/api-reference/credit-card-form">
+    Implement secure credit card tokenization
+  </Card>
+  
+  <Card title="Wallet Links" icon="wallet" href="/api-reference/wallet-link">
+    Set up PayMaya wallet payments
+  </Card>
+</CardGroup>
+
+<Tip>
+Check out the complete example application in the [GitHub repository](https://github.com/PayMaya/PayMaya-JS-SDK-v2/tree/master/example) to see all features in action.
+</Tip>

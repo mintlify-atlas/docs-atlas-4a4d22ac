@@ -1,0 +1,160 @@
+---
+title: 'Environment Setup'
+description: 'Configure sandbox and production environments for the PayMaya JS SDK'
+---
+
+## Overview
+
+The PayMaya JS SDK supports both sandbox and production environments. You must initialize the SDK with your API keys before making any payment requests.
+
+## Getting API Keys
+
+To use the PayMaya JS SDK, you need to obtain API keys from PayMaya:
+
+1. **Sandbox Keys** - For development and testing
+2. **Production Keys** - For live transactions
+
+Contact PayMaya at paymayadevs@voyager.ph to request your API keys.
+
+<Warning>
+  Never expose your secret keys in client-side code. The JS SDK only uses your **public key**.
+</Warning>
+
+## Initializing the SDK
+
+Before using any payment methods, you must initialize the SDK using the `init()` method. This only needs to be done once in your application's lifetime.
+
+### Syntax
+
+```javascript
+paymaya.init(publicKey, isSandbox)
+```
+
+### Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `publicKey` | string | Yes | - | Your PayMaya public API key |
+| `isSandbox` | boolean | No | `true` | Set to `true` for sandbox, `false` for production |
+
+## Environment Configuration
+
+The SDK automatically configures the correct API endpoints based on the `isSandbox` parameter:
+
+<Tabs>
+  <Tab title="Sandbox">
+    ```javascript
+    // Sandbox environment (default)
+    paymaya.init('pk-Z0OSzLvIcOI2UIvDhdTGVVfRSSeiGStnceqwUE7n0Ah', true);
+    ```
+
+    **Sandbox endpoints:**
+    - API URL: `https://pg-sandbox.paymaya.com`
+    - Form URL: `https://paymayajs-staging.s3.amazonaws.com/dist/index.html`
+  </Tab>
+  
+  <Tab title="Production">
+    ```javascript
+    // Production environment
+    paymaya.init('pk-your-production-key-here', false);
+    ```
+
+    **Production endpoints:**
+    - API URL: `https://pg.paymaya.com`
+    - Form URL: `https://paymayajs.s3.amazonaws.com/dist/index.html`
+  </Tab>
+</Tabs>
+
+## Implementation Examples
+
+<CodeGroup>
+
+```javascript React
+import paymaya from 'paymaya-js-sdk';
+import { useEffect } from 'react';
+
+function App() {
+  useEffect(() => {
+    // Initialize SDK once when component mounts
+    paymaya.init('pk-Z0OSzLvIcOI2UIvDhdTGVVfRSSeiGStnceqwUE7n0Ah', true);
+  }, []);
+
+  return (
+    <div>
+      <h1>My Payment App</h1>
+    </div>
+  );
+}
+```
+
+```javascript Vanilla JS
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://unpkg.com/paymaya-js-sdk@2.0.1/dist/bundle.js"></script>
+</head>
+<body>
+  <script>
+    // Initialize when page loads
+    PayMayaSDK.init('pk-Z0OSzLvIcOI2UIvDhdTGVVfRSSeiGStnceqwUE7n0Ah', true);
+  </script>
+</body>
+</html>
+```
+
+```javascript Next.js
+import paymaya from 'paymaya-js-sdk';
+import { useEffect } from 'react';
+
+export default function PaymentPage() {
+  useEffect(() => {
+    // Initialize SDK in client-side only
+    if (typeof window !== 'undefined') {
+      paymaya.init('pk-Z0OSzLvIcOI2UIvDhdTGVVfRSSeiGStnceqwUE7n0Ah', true);
+    }
+  }, []);
+
+  return <div>Payment Page</div>;
+}
+```
+
+</CodeGroup>
+
+## Best Practices
+
+<Note>
+  - Initialize the SDK as early as possible in your application lifecycle
+  - Use environment variables to manage different keys for development and production
+  - Always use sandbox mode during development and testing
+  - Switch to production mode only after thorough testing
+</Note>
+
+### Environment Variables Example
+
+```javascript
+// Using environment variables (recommended)
+const publicKey = process.env.REACT_APP_PAYMAYA_PUBLIC_KEY;
+const isSandbox = process.env.NODE_ENV !== 'production';
+
+paymaya.init(publicKey, isSandbox);
+```
+
+## Verification
+
+After initialization, the SDK will throw an error if you attempt to use payment methods without calling `init()` first:
+
+```javascript
+// This will throw an error: "You must first run init() method!"
+paymaya.createCheckout(checkoutObject); // Error if init() not called
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Create Checkout" icon="shopping-cart" href="/api-reference/checkout">
+    Learn how to create a checkout session
+  </Card>
+  <Card title="Error Handling" icon="triangle-exclamation" href="/guides/error-handling">
+    Handle errors and edge cases
+  </Card>
+</CardGroup>

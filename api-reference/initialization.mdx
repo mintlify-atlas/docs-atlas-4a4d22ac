@@ -1,0 +1,168 @@
+---
+title: 'init()'
+description: 'Initialize the PayMaya JS SDK with your API credentials'
+---
+
+## Method Signature
+
+```typescript
+init(publicKey: string, isSandbox?: boolean): void
+```
+
+Initialize the PayMaya SDK with your public API key and environment setting. This method must be called before using any other SDK features.
+
+<Warning>
+You must call `init()` before using any other SDK methods. All SDK methods will throw an error if called before initialization.
+</Warning>
+
+## Parameters
+
+<ParamField path="publicKey" type="string" required>
+Your PayMaya public API key. You can find this in your PayMaya Dashboard.
+
+- For sandbox testing, use your sandbox public key
+- For production, use your production public key
+</ParamField>
+
+<ParamField path="isSandbox" type="boolean" default="true">
+Determines which PayMaya environment to use:
+
+- `true` - Uses sandbox environment (`pg-sandbox.paymaya.com`)
+- `false` - Uses production environment (`pg.paymaya.com`)
+
+<Note>
+Defaults to `true` for safety. Always test in sandbox before switching to production.
+</Note>
+</ParamField>
+
+## Environment Configuration
+
+When initialized, the SDK automatically configures the following based on the `isSandbox` parameter:
+
+### Sandbox Mode (isSandbox = true)
+- **API URL**: `https://pg-sandbox.paymaya.com`
+- **Form URL**: `https://paymayajs-staging.s3.amazonaws.com/dist/index.html`
+- **Event Origin**: `https://paymayajs-staging.s3.amazonaws.com`
+
+### Production Mode (isSandbox = false)
+- **API URL**: `https://pg.paymaya.com`
+- **Form URL**: `https://paymayajs.s3.amazonaws.com/dist/index.html`
+- **Event Origin**: `https://paymayajs.s3.amazonaws.com`
+
+## Examples
+
+### Basic Initialization (Sandbox)
+
+```javascript
+import PayMayaSDK from 'paymaya-js-sdk';
+
+// Initialize in sandbox mode (default)
+PayMayaSDK.init('pk-test-abc123def456ghi789jkl012');
+```
+
+### Production Initialization
+
+```javascript
+import PayMayaSDK from 'paymaya-js-sdk';
+
+// Initialize in production mode
+PayMayaSDK.init('pk-live-abc123def456ghi789jkl012', false);
+```
+
+### React Example
+
+```jsx
+import { useEffect } from 'react';
+import PayMayaSDK from 'paymaya-js-sdk';
+
+function App() {
+  useEffect(() => {
+    // Initialize SDK when component mounts
+    PayMayaSDK.init(
+      process.env.REACT_APP_PAYMAYA_PUBLIC_KEY,
+      process.env.NODE_ENV !== 'production'
+    );
+  }, []);
+
+  return (
+    <div>
+      {/* Your app components */}
+    </div>
+  );
+}
+```
+
+### Next.js Example
+
+```jsx
+import { useEffect } from 'react';
+import PayMayaSDK from 'paymaya-js-sdk';
+
+export default function MyApp({ Component, pageProps }) {
+  useEffect(() => {
+    // Initialize SDK once on app load
+    const publicKey = process.env.NEXT_PUBLIC_PAYMAYA_PUBLIC_KEY;
+    const isSandbox = process.env.NODE_ENV !== 'production';
+    
+    PayMayaSDK.init(publicKey, isSandbox);
+  }, []);
+
+  return <Component {...pageProps} />;
+}
+```
+
+### Vanilla JavaScript
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <title>PayMaya Integration</title>
+</head>
+<body>
+  <script src="path/to/paymaya-js-sdk.js"></script>
+  <script>
+    // Initialize SDK when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      PayMayaSDK.init('pk-test-abc123def456ghi789jkl012', true);
+    });
+  </script>
+</body>
+</html>
+```
+
+## Best Practices
+
+<Note>
+**Environment Variables**: Store your API keys in environment variables and never commit them to version control.
+</Note>
+
+<Warning>
+**Single Initialization**: Only call `init()` once during your application lifecycle. Multiple calls will overwrite the previous configuration.
+</Warning>
+
+<Note>
+**Testing First**: Always test your integration in sandbox mode before deploying to production. Use different API keys for each environment.
+</Note>
+
+## Error Handling
+
+If you attempt to use SDK methods before calling `init()`, you'll receive an error:
+
+```javascript
+Error: You must first run init() method!
+```
+
+Make sure to initialize the SDK before calling any of these methods:
+- `createCheckout()`
+- `createWalletLink()`
+- `createSinglePayment()`
+- `createCreditCardForm()`
+- `addTransactionHandler()`
+
+## Related Methods
+
+- [createCheckout()](/api-reference/checkout) - Create a checkout session
+- [createWalletLink()](/api-reference/wallet-link) - Link PayMaya wallet
+- [createSinglePayment()](/api-reference/single-payment) - Process single payment
+- [createCreditCardForm()](/api-reference/credit-card-form) - Render credit card form

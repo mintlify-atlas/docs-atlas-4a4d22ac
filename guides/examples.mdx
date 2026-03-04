@@ -1,0 +1,496 @@
+---
+title: 'Real-World Examples'
+description: 'Complete implementation examples for PayMaya JS SDK payment methods'
+---
+
+## Overview
+
+This guide provides real-world examples from the PayMaya JS SDK example application. All code examples are production-ready and demonstrate best practices.
+
+<Note>
+  A complete React.js example application is available in the [GitHub repository](https://github.com/PayMaya/PayMaya-JS-SDK-v2/tree/master/example).
+</Note>
+
+## Installation
+
+<Tabs>
+  <Tab title="npm">
+    ```bash
+    npm install --save paymaya-js-sdk
+    ```
+  </Tab>
+  
+  <Tab title="yarn">
+    ```bash
+    yarn add paymaya-js-sdk
+    ```
+  </Tab>
+  
+  <Tab title="CDN">
+    ```html
+    <script src="https://unpkg.com/paymaya-js-sdk@2.0.1/dist/bundle.js"></script>
+    ```
+    
+    <Note>
+      When using CDN, the SDK is available globally as `PayMayaSDK`
+    </Note>
+  </Tab>
+</Tabs>
+
+## Checkout Example
+
+Create a complete checkout flow with items, buyer information, and redirect URLs.
+
+```javascript
+import React, { Component } from 'react';
+import paymaya from 'paymaya-js-sdk';
+
+class Checkout extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      loading: false,
+      requestReferenceNumber: "6319921",
+      items: [
+        {
+          name: "Nike Footwear",
+          quantity: 1,
+          totalAmount: {
+            value: 100
+          }
+        }
+      ],
+      totalAmount: {
+        value: 100,
+        currency: 'PHP',
+      },
+      metadata: {},
+      redirectUrl: {
+        success: "http://localhost:3000/success",
+        failure: "http://localhost:3000/failure",
+        cancel: "http://localhost:3000/cancel"
+      },
+      errorResponse: {}
+    };
+  }
+
+  async createCheckout() {
+    this.setState({
+      loading: true,
+      errorResponse: {}
+    });
+
+    const { requestReferenceNumber, totalAmount, items, metadata, redirectUrl } = this.state;
+
+    const checkoutData = {
+      requestReferenceNumber,
+      totalAmount,
+      items,
+      metadata,
+      redirectUrl
+    };
+
+    paymaya.init('pk-Z0OSzLvIcOI2UIvDhdTGVVfRSSeiGStnceqwUE7n0Ah', true);
+    
+    await paymaya.createCheckout(checkoutData)
+      .then(() => {
+        // User will be redirected to PayMaya checkout
+      })
+      .catch((err) => {
+        this.setState({
+          errorResponse: err,
+          loading: false
+        });
+      });
+  }
+
+  render() {
+    const { loading } = this.state;
+    
+    return (
+      <div className="form">
+        <h2>Checkout</h2>
+        <button 
+          onClick={() => this.createCheckout()} 
+          type="button"
+          disabled={loading}
+        >
+          {loading ? 'Processing...' : 'Proceed to Checkout'}
+        </button>
+      </div>
+    );
+  }
+}
+
+export default Checkout;
+```
+
+### Full Checkout Object
+
+Here's a complete checkout object with all optional fields:
+
+```json
+{
+  "totalAmount": {
+    "value": 100,
+    "currency": "PHP",
+    "details": {
+      "discount": 0,
+      "serviceCharge": 0,
+      "shippingFee": 0,
+      "tax": 0,
+      "subtotal": 100
+    }
+  },
+  "buyer": {
+    "firstName": "John",
+    "middleName": "Paul",
+    "lastName": "Doe",
+    "birthday": "1995-10-24",
+    "customerSince": "1995-10-24",
+    "sex": "M",
+    "contact": {
+      "phone": "+639181008888",
+      "email": "merchant@merchantsite.com"
+    },
+    "shippingAddress": {
+      "firstName": "John",
+      "middleName": "Paul",
+      "lastName": "Doe",
+      "phone": "+639181008888",
+      "email": "merchant@merchantsite.com",
+      "line1": "6F Launchpad",
+      "line2": "Reliance Street",
+      "city": "Mandaluyong City",
+      "state": "Metro Manila",
+      "zipCode": "1552",
+      "countryCode": "PH",
+      "shippingType": "ST"
+    },
+    "billingAddress": {
+      "line1": "6F Launchpad",
+      "line2": "Reliance Street",
+      "city": "Mandaluyong City",
+      "state": "Metro Manila",
+      "zipCode": "1552",
+      "countryCode": "PH"
+    }
+  },
+  "items": [
+    {
+      "name": "Canvas Slip Ons",
+      "quantity": 1,
+      "code": "CVG-096732",
+      "description": "Shoes",
+      "amount": {
+        "value": 100,
+        "details": {
+          "discount": 0,
+          "serviceCharge": 0,
+          "shippingFee": 0,
+          "tax": 0,
+          "subtotal": 100
+        }
+      },
+      "totalAmount": {
+        "value": 100,
+        "details": {
+          "discount": 0,
+          "serviceCharge": 0,
+          "shippingFee": 0,
+          "tax": 0,
+          "subtotal": 100
+        }
+      }
+    }
+  ],
+  "redirectUrl": {
+    "success": "https://www.merchantsite.com/success",
+    "failure": "https://www.merchantsite.com/failure",
+    "cancel": "https://www.merchantsite.com/cancel"
+  },
+  "requestReferenceNumber": "1551191039",
+  "metadata": {}
+}
+```
+
+## Single Payment Example
+
+Create a simple one-time payment without detailed item information.
+
+```javascript
+import React, { Component } from 'react';
+import paymaya from 'paymaya-js-sdk';
+
+class SinglePayment extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      loading: false,
+      requestReferenceNumber: "6319921",
+      totalAmount: {
+        value: '100',
+        currency: 'PHP',
+      },
+      metadata: {},
+      redirectUrl: {
+        success: "http://localhost:3000/success",
+        failure: "http://localhost:3000/failure",
+        cancel: "http://localhost:3000/cancel"
+      },
+      errorResponse: {}
+    };
+  }
+
+  async createSinglePayment() {
+    this.setState({
+      loading: true,
+      errorResponse: {}
+    });
+
+    const { requestReferenceNumber, totalAmount, metadata, redirectUrl } = this.state;
+
+    const paymentData = {
+      requestReferenceNumber,
+      totalAmount,
+      metadata,
+      redirectUrl
+    };
+
+    paymaya.init('pk-MOfNKu3FmHMVHtjyjG7vhr7vFevRkWxmxYL1Yq6iFk5', true);
+    
+    await paymaya.createSinglePayment(paymentData)
+      .then(() => {
+        // User will be redirected to payment page
+      })
+      .catch((err) => {
+        this.setState({
+          errorResponse: err,
+          loading: false
+        });
+      });
+  }
+
+  render() {
+    return (
+      <div className="form">
+        <h2>Single Payment</h2>
+        <button onClick={() => this.createSinglePayment()} type="button">
+          Pay Now
+        </button>
+      </div>
+    );
+  }
+}
+
+export default SinglePayment;
+```
+
+## Wallet Link Example
+
+Create a wallet link to charge a PayMaya account.
+
+```javascript
+import React, { Component } from 'react';
+import paymaya from 'paymaya-js-sdk';
+
+class WalletLink extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      loading: false,
+      requestReferenceNumber: "6319921",
+      metadata: {},
+      redirectUrl: {
+        success: "http://localhost:3000/success",
+        failure: "http://localhost:3000/failure",
+        cancel: "http://localhost:3000/cancel"
+      },
+      errorResponse: {}
+    };
+  }
+
+  async createWalletLink() {
+    this.setState({
+      loading: true,
+      errorResponse: {}
+    });
+
+    const { requestReferenceNumber, metadata, redirectUrl } = this.state;
+
+    const walletData = {
+      requestReferenceNumber,
+      metadata,
+      redirectUrl
+    };
+
+    paymaya.init('pk-MOfNKu3FmHMVHtjyjG7vhr7vFevRkWxmxYL1Yq6iFk5', true);
+    
+    await paymaya.createWalletLink(walletData)
+      .then(() => {
+        // User will be redirected to link wallet
+      })
+      .catch((err) => {
+        this.setState({
+          errorResponse: err,
+          loading: false
+        });
+      });
+  }
+
+  render() {
+    return (
+      <div className="form">
+        <h2>Wallet Link</h2>
+        <button onClick={() => this.createWalletLink()} type="button">
+          Link Wallet
+        </button>
+      </div>
+    );
+  }
+}
+
+export default WalletLink;
+```
+
+## Credit Card Form Example
+
+Embed a secure credit card form and handle tokenization.
+
+```javascript
+import React, { Component } from 'react';
+import paymaya from 'paymaya-js-sdk';
+
+class CreditCard extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      paymentTokenId: null
+    };
+  }
+
+  componentDidMount() {
+    this.createCreditCardForm();
+  }
+
+  createCreditCardForm = () => {
+    paymaya.init('pk-MOfNKu3FmHMVHtjyjG7vhr7vFevRkWxmxYL1Yq6iFk5', true);
+    
+    const iframeContainer = document.getElementById("iframe-container");
+    
+    paymaya
+      .createCreditCardForm(iframeContainer)
+      .addTransactionHandler((paymentTokenId) => {
+        console.log('Payment token received:', paymentTokenId);
+        this.setState({ paymentTokenId });
+        // Use the token to charge the card via your backend
+      });
+  }
+
+  render() {
+    return (
+      <div className="form">
+        <h2>Credit Card Payment</h2>
+        <div id="iframe-container" />
+        {this.state.paymentTokenId && (
+          <p>Token: {this.state.paymentTokenId}</p>
+        )}
+      </div>
+    );
+  }
+}
+
+export default CreditCard;
+```
+
+### Customizing the Credit Card Form
+
+```javascript
+const options = {
+  buttonText: 'Pay Now',
+  buttonColor: '#007bff',
+  buttonTextColor: '#ffffff',
+  showLogo: true
+};
+
+paymaya
+  .createCreditCardForm(iframeContainer, options)
+  .addTransactionHandler((paymentTokenId) => {
+    // Handle token
+  });
+```
+
+## Vanilla JavaScript Example
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <title>PayMaya Payment</title>
+  <script src="https://unpkg.com/paymaya-js-sdk@2.0.1/dist/bundle.js"></script>
+</head>
+<body>
+  <button onclick="handleCheckout()">Checkout</button>
+
+  <script>
+    function handleCheckout() {
+      const checkoutObject = {
+        totalAmount: {
+          value: 100,
+          currency: 'PHP'
+        },
+        items: [
+          {
+            name: 'Test Product',
+            quantity: 1,
+            totalAmount: { value: 100 }
+          }
+        ],
+        requestReferenceNumber: '123456',
+        redirectUrl: {
+          success: 'https://yoursite.com/success',
+          failure: 'https://yoursite.com/failure',
+          cancel: 'https://yoursite.com/cancel'
+        },
+        metadata: {}
+      };
+
+      PayMayaSDK.init('pk-your-public-key', true);
+      PayMayaSDK.createCheckout(checkoutObject);
+    }
+  </script>
+</body>
+</html>
+```
+
+## Running the Example Application
+
+Clone and run the complete example application:
+
+```bash
+git clone git@github.com:PayMaya/PayMaya-JS-SDK-v2.git
+cd PayMaya-JS-SDK-v2
+npm ci
+cd example
+npm ci
+npm start
+```
+
+The example app will open at [http://localhost:3000](http://localhost:3000)
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Environment Setup" icon="gear" href="/guides/environment-setup">
+    Configure sandbox and production environments
+  </Card>
+  <Card title="Error Handling" icon="triangle-exclamation" href="/guides/error-handling">
+    Learn how to handle errors gracefully
+  </Card>
+  <Card title="Checkout API" icon="book" href="/api-reference/checkout">
+    View complete API documentation
+  </Card>
+  <Card title="Credit Card API" icon="credit-card" href="/api-reference/credit-card-form">
+    Explore credit card tokenization
+  </Card>
+</CardGroup>

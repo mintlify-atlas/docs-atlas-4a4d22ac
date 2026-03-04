@@ -1,0 +1,137 @@
+---
+title: Introduction
+description: Overview of the PayMaya JS SDK for integrating payment processing into your web applications
+---
+
+The PayMaya JS SDK is the official client-side JavaScript library for integrating PayMaya payment gateway into your web applications. It provides a simple, secure way to accept payments through various PayMaya payment methods including checkout flows, wallet links, single payments, and tokenized credit card forms.
+
+## What is PayMaya JS SDK?
+
+PayMaya JS SDK is a lightweight, TypeScript-based library that enables merchants to:
+
+- Process payments securely through PayMaya's payment gateway
+- Create checkout sessions with detailed transaction information
+- Tokenize credit card information safely using embedded iframes
+- Handle wallet-based payments and single payment transactions
+- Manage payment redirects and callbacks
+
+## Key Features
+
+### Secure Payment Processing
+
+The SDK handles all communication with PayMaya's API using your public API key, ensuring secure transaction processing without exposing sensitive data.
+
+### Multiple Payment Methods
+
+Support for various payment flows:
+- **Checkout API**: Full checkout experience with item details and buyer information
+- **Wallet Link**: Direct PayMaya wallet account linking and payments
+- **Single Payment**: Quick one-time payment transactions
+- **Credit Card Tokenization**: PCI-compliant credit card form embedded via secure iframe
+
+### Environment Support
+
+Seamless switching between sandbox and production environments for testing and deployment.
+
+```typescript
+// Sandbox environment (default)
+PayMayaSDK.init('your-public-key', true);
+
+// Production environment
+PayMayaSDK.init('your-public-key', false);
+```
+
+### TypeScript Support
+
+Fully typed interfaces and type definitions for enhanced developer experience:
+
+```typescript
+import PayMayaSDK from 'paymaya-js-sdk';
+import { CreateCheckoutObject, CreateSinglePaymentObject } from 'paymaya-js-sdk';
+```
+
+<Note>
+The SDK is available at version 2.0.1 and follows semantic versioning.
+</Note>
+
+## How It Works
+
+The PayMaya JS SDK follows a simple initialization and execution pattern:
+
+<Steps>
+  <Step title="Initialize the SDK">
+    Set up the SDK with your public API key and environment preference (sandbox or production).
+  </Step>
+  
+  <Step title="Create Payment Objects">
+    Construct payment request objects with transaction details, amounts, and redirect URLs.
+  </Step>
+  
+  <Step title="Execute Payment Methods">
+    Call SDK methods to initiate payment flows or create credit card forms.
+  </Step>
+  
+  <Step title="Handle Callbacks">
+    Process payment results through redirect URLs or transaction handlers.
+  </Step>
+</Steps>
+
+## Architecture
+
+The SDK operates entirely on the client side and communicates with PayMaya's API endpoints:
+
+- **Sandbox API**: `https://pg-sandbox.paymaya.com`
+- **Production API**: `https://pg.paymaya.com`
+
+For credit card tokenization, the SDK embeds a secure iframe hosted by PayMaya, ensuring PCI compliance without requiring additional security measures on your end.
+
+<Warning>
+The SDK requires initialization using the `init()` method before any other methods can be called. Attempting to use payment methods without initialization will throw an error.
+</Warning>
+
+## Use Cases
+
+### E-commerce Platforms
+Integrate complete checkout flows with item details, buyer information, and order management.
+
+### Subscription Services
+Use wallet links to enable recurring payments and account linking.
+
+### Quick Payments
+Implement single payment transactions for simple, one-time purchases.
+
+### Custom Payment Forms
+Embed tokenized credit card forms within your application's UI using the iframe-based card form.
+
+## Browser Compatibility
+
+The SDK uses modern web APIs including:
+- `fetch` for API requests
+- `postMessage` for secure iframe communication
+- `btoa` for basic authentication encoding
+
+Ensure your target browsers support these features or include appropriate polyfills.
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Installation" icon="download" href="/installation">
+    Install the SDK via npm, yarn, pnpm, or CDN
+  </Card>
+  
+  <Card title="Quick Start" icon="rocket" href="/quickstart">
+    Create your first payment in minutes
+  </Card>
+  
+  <Card title="API Reference" icon="code" href="/api-reference/initialization">
+    Explore all available methods and types
+  </Card>
+  
+  <Card title="Examples" icon="book" href="/guides/examples">
+    View complete implementation examples
+  </Card>
+</CardGroup>
+
+<Tip>
+For assistance or questions, contact PayMaya developers at paymayadevs@voyager.ph
+</Tip>

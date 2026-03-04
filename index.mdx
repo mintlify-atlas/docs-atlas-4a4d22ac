@@ -1,97 +1,288 @@
 ---
-title: "Introduction"
-description: "Welcome to the new home for your documentation"
+title: PayMaya JS SDK
+description: Official client-side JavaScript SDK for PayMaya Payment Gateway integration
+mode: custom
 ---
 
-## Setting up
+<div className="relative overflow-hidden bg-gradient-to-br from-[#151515] via-[#2a2a2a] to-[#151515] dark:from-[#0f1117] dark:via-[#1a1d27] dark:to-[#0f1117] py-20">
+  <div className="max-w-6xl mx-auto px-6 lg:px-8">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+      <div className="lg:col-span-7">
+        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white dark:text-gray-100 mb-6">
+          Accept payments with PayMaya
+        </h1>
+        <p className="text-lg sm:text-xl text-gray-300 dark:text-gray-400 max-w-2xl mb-8">
+          Integrate checkout flows, wallet linking, and secure credit card processing into your web application with our official JavaScript SDK.
+        </p>
+        <div className="flex flex-wrap gap-4">
+          <a 
+            href="/quickstart" 
+            className="inline-flex items-center px-6 py-3 rounded-lg bg-[#848484] hover:bg-[#6b6b6b] text-white font-semibold transition-colors no-underline"
+          >
+            Get Started
+            <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+          </a>
+          <a 
+            href="/api-reference/initialization" 
+            className="inline-flex items-center px-6 py-3 rounded-lg border border-white/30 bg-white/10 hover:bg-white/20 text-white font-semibold transition-colors no-underline"
+          >
+            API Reference
+          </a>
+        </div>
+      </div>
+      <div className="lg:col-span-5 flex justify-center">
+        <div className="relative w-full max-w-md">
+          <div className="absolute inset-0 bg-gradient-to-r from-[#848484] to-[#c0c0c0] rounded-2xl blur-3xl opacity-20"></div>
+          <div className="relative bg-[#1a1d27] dark:bg-[#242838] border border-[#27272a] dark:border-[#27272a] rounded-2xl p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-3 h-3 rounded-full bg-red-500"></div>
+              <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+              <div className="w-3 h-3 rounded-full bg-green-500"></div>
+            </div>
+            <pre className="text-sm text-gray-300 dark:text-gray-300 overflow-x-auto">
+{`import paymaya from 'paymaya-js-sdk';
 
-Get your documentation site up and running in minutes.
+// Initialize SDK
+paymaya.init('pk-live-...', false);
 
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
-</Card>
+// Create checkout
+paymaya.createCheckout({
+  totalAmount: {
+    value: 100,
+    currency: 'PHP'
+  },
+  items: [/* ... */],
+  redirectUrl: {
+    success: '/success',
+    failure: '/failure'
+  }
+});`}
+            </pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-## Make it yours
+<div className="mt-16 mb-16 max-w-5xl mx-auto px-6">
+  <h2 className="text-2xl sm:text-3xl font-semibold text-gray-900 dark:text-white mb-3">
+    Quick start
+  </h2>
+  <p className="text-base text-gray-600 dark:text-gray-400 mb-8">
+    Get up and running with PayMaya in minutes
+  </p>
 
-Design a docs site that looks great and empowers your users.
+  <Steps>
+    <Step title="Install the SDK">
+      Add the PayMaya JS SDK to your project using npm or yarn:
 
-<Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
-  </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
-  </Card>
+      <CodeGroup>
+      ```bash npm
+      npm install paymaya-js-sdk
+      ```
+      ```bash yarn
+      yarn add paymaya-js-sdk
+      ```
+      ```bash pnpm
+      pnpm add paymaya-js-sdk
+      ```
+      </CodeGroup>
+
+      You can also include it directly via a script tag:
+      ```html
+      <script src="https://unpkg.com/paymaya-js-sdk@2.0.1/dist/bundle.js"></script>
+      ```
+    </Step>
+
+    <Step title="Initialize the SDK">
+      Import and initialize the SDK with your public API key:
+
+      ```javascript
+      import paymaya from 'paymaya-js-sdk';
+
+      // Initialize with your public key
+      // Set second parameter to true for sandbox, false for production
+      paymaya.init('your-public-key', true);
+      ```
+
+      <Note>
+        Get your API keys from the [PayMaya Developer Portal](https://developers.paymaya.com). Use sandbox keys for testing.
+      </Note>
+    </Step>
+
+    <Step title="Create your first payment">
+      Use the SDK to create a checkout flow:
+
+      ```javascript
+      const checkoutObject = {
+        totalAmount: {
+          value: 100,
+          currency: 'PHP'
+        },
+        items: [{
+          name: 'Test Item',
+          quantity: 1,
+          totalAmount: { value: 100 }
+        }],
+        redirectUrl: {
+          success: 'https://yoursite.com/success',
+          failure: 'https://yoursite.com/failure',
+          cancel: 'https://yoursite.com/cancel'
+        },
+        requestReferenceNumber: '1234567890'
+      };
+
+      paymaya.createCheckout(checkoutObject);
+      ```
+
+      This will redirect your user to the PayMaya checkout page to complete their payment.
+    </Step>
+  </Steps>
+</div>
+
+<div className="mt-16 mb-16 max-w-5xl mx-auto px-6">
+  <h2 className="text-2xl sm:text-3xl font-semibold text-gray-900 dark:text-white mb-3">
+    Explore payment methods
+  </h2>
+  <p className="text-base text-gray-600 dark:text-gray-400 mb-8">
+    Choose the integration that fits your use case
+  </p>
+
+  <CardGroup cols={2}>
     <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
-  </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
-  </Card>
-</Columns>
+      title="Checkout API"
+      icon="shopping-cart"
+      href="/api-reference/checkout"
+    >
+      Create complete payment flows with hosted checkout pages
+    </Card>
+    <Card
+      title="Wallet Link"
+      icon="wallet"
+      href="/api-reference/wallet-link"
+    >
+      Link PayMaya accounts for seamless recurring payments
+    </Card>
+    <Card
+      title="Single Payment"
+      icon="credit-card"
+      href="/api-reference/single-payment"
+    >
+      Process one-time payments quickly and securely
+    </Card>
+    <Card
+      title="Credit Card Form"
+      icon="lock"
+      href="/api-reference/credit-card-form"
+    >
+      Embed secure credit card forms directly in your app
+    </Card>
+  </CardGroup>
+</div>
 
-## Create beautiful pages
+<div className="mt-16 mb-16 max-w-5xl mx-auto px-6">
+  <h2 className="text-2xl sm:text-3xl font-semibold text-gray-900 dark:text-white mb-3">
+    Key features
+  </h2>
+  <p className="text-base text-gray-600 dark:text-gray-400 mb-8">
+    Everything you need to accept payments
+  </p>
 
-Everything you need to create world-class documentation.
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="border border-gray-200 dark:border-[#27272a] bg-gray-50 dark:bg-[#1a1d27] rounded-lg p-6">
+      <div className="flex items-start gap-4">
+        <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-[#848484]/10 dark:bg-[#848484]/20 flex items-center justify-center">
+          <svg className="w-5 h-5 text-[#848484]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          </svg>
+        </div>
+        <div>
+          <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-2">Secure by default</h3>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            PCI-compliant iframe embedding keeps sensitive card data off your servers
+          </p>
+        </div>
+      </div>
+    </div>
 
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
-  </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
-  </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
-  </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
-  </Card>
-</Columns>
+    <div className="border border-gray-200 dark:border-[#27272a] bg-gray-50 dark:bg-[#1a1d27] rounded-lg p-6">
+      <div className="flex items-start gap-4">
+        <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-[#848484]/10 dark:bg-[#848484]/20 flex items-center justify-center">
+          <svg className="w-5 h-5 text-[#848484]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+        </div>
+        <div>
+          <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-2">Fast integration</h3>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            Start accepting payments in minutes with our simple API
+          </p>
+        </div>
+      </div>
+    </div>
 
-## Need inspiration?
+    <div className="border border-gray-200 dark:border-[#27272a] bg-gray-50 dark:bg-[#1a1d27] rounded-lg p-6">
+      <div className="flex items-start gap-4">
+        <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-[#848484]/10 dark:bg-[#848484]/20 flex items-center justify-center">
+          <svg className="w-5 h-5 text-[#848484]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+        </div>
+        <div>
+          <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-2">Sandbox testing</h3>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            Test your integration thoroughly before going live
+          </p>
+        </div>
+      </div>
+    </div>
 
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
-</Card>
+    <div className="border border-gray-200 dark:border-[#27272a] bg-gray-50 dark:bg-[#1a1d27] rounded-lg p-6">
+      <div className="flex items-start gap-4">
+        <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-[#848484]/10 dark:bg-[#848484]/20 flex items-center justify-center">
+          <svg className="w-5 h-5 text-[#848484]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
+          </svg>
+        </div>
+        <div>
+          <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-2">Flexible options</h3>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            Multiple payment methods to suit different user preferences
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div className="mt-16 mb-16 max-w-5xl mx-auto px-6">
+  <div className="border border-gray-200 dark:border-[#27272a] bg-gradient-to-br from-gray-50 to-white dark:from-[#1a1d27] dark:to-[#0f1117] rounded-2xl p-8 sm:p-12 text-center">
+    <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4">
+      Ready to start accepting payments?
+    </h2>
+    <p className="text-base text-gray-600 dark:text-gray-400 max-w-2xl mx-auto mb-8">
+      Get your API keys and start integrating PayMaya into your application today
+    </p>
+    <div className="flex flex-wrap justify-center gap-4">
+      <a 
+        href="/quickstart" 
+        className="inline-flex items-center px-6 py-3 rounded-lg bg-[#848484] hover:bg-[#6b6b6b] text-white font-semibold transition-colors no-underline"
+      >
+        Get Started
+        <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+        </svg>
+      </a>
+      <a 
+        href="/guides/examples" 
+        className="inline-flex items-center px-6 py-3 rounded-lg border border-gray-300 dark:border-[#27272a] bg-white dark:bg-[#1a1d27] hover:bg-gray-50 dark:hover:bg-[#242838] text-gray-900 dark:text-white font-semibold transition-colors no-underline"
+      >
+        View Examples
+      </a>
+    </div>
+  </div>
+</div>

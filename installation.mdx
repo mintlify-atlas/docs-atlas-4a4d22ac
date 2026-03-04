@@ -1,0 +1,233 @@
+---
+title: Installation
+description: Install the PayMaya JS SDK using npm, yarn, pnpm, or include it via CDN script tag
+---
+
+The PayMaya JS SDK can be installed and used in multiple ways depending on your project setup. Choose the method that best fits your development environment.
+
+## Package Managers
+
+Install the SDK as a dependency in your project using your preferred package manager.
+
+<CodeGroup>
+
+```bash npm
+npm install paymaya-js-sdk
+```
+
+```bash yarn
+yarn add paymaya-js-sdk
+```
+
+```bash pnpm
+pnpm add paymaya-js-sdk
+```
+
+</CodeGroup>
+
+### Package Details
+
+- **Package Name**: `paymaya-js-sdk`
+- **Current Version**: 2.0.1
+- **Main Bundle**: `dist/bundle.js`
+- **Type Definitions**: `dist/index.d.ts`
+
+<Note>
+The SDK includes TypeScript type definitions out of the box, providing full IntelliSense support in modern IDEs.
+</Note>
+
+## CDN Installation
+
+For quick prototyping or if you're not using a build system, include the SDK directly in your HTML using a script tag.
+
+```html
+<script src="https://unpkg.com/paymaya-js-sdk@2.0.1/dist/bundle.js"></script>
+```
+
+<Warning>
+When using the CDN method, the SDK is available globally as `PayMayaSDK` (note the capital letters), not as an ES module import.
+</Warning>
+
+### Version Pinning
+
+It's recommended to pin to a specific version to ensure consistency:
+
+```html
+<!-- Pinned to version 2.0.1 -->
+<script src="https://unpkg.com/paymaya-js-sdk@2.0.1/dist/bundle.js"></script>
+```
+
+Or use the latest version (not recommended for production):
+
+```html
+<!-- Always uses the latest version -->
+<script src="https://unpkg.com/paymaya-js-sdk/dist/bundle.js"></script>
+```
+
+## Usage After Installation
+
+### ES Module Import (npm/yarn/pnpm)
+
+After installing via a package manager, import the SDK in your JavaScript or TypeScript files:
+
+<CodeGroup>
+
+```javascript JavaScript
+import PayMayaSDK from 'paymaya-js-sdk';
+
+// Initialize the SDK
+PayMayaSDK.init('your-public-key', true);
+```
+
+```typescript TypeScript
+import PayMayaSDK from 'paymaya-js-sdk';
+import type { 
+  CreateCheckoutObject, 
+  CreateSinglePaymentObject,
+  CreateWalletLinkObject,
+  CreditCardFormOptions 
+} from 'paymaya-js-sdk';
+
+// Initialize the SDK
+PayMayaSDK.init('your-public-key', true);
+
+// Use TypeScript interfaces for type safety
+const checkoutData: CreateCheckoutObject = {
+  totalAmount: {
+    value: 100,
+    currency: 'PHP'
+  },
+  items: [
+    {
+      name: 'Product Name',
+      totalAmount: {
+        value: 100
+      }
+    }
+  ],
+  requestReferenceNumber: '123456',
+  metadata: {}
+};
+```
+
+```javascript React
+import React, { useEffect } from 'react';
+import PayMayaSDK from 'paymaya-js-sdk';
+
+function App() {
+  useEffect(() => {
+    // Initialize SDK when component mounts
+    PayMayaSDK.init('your-public-key', true);
+  }, []);
+
+  return (
+    <div>
+      <h1>My Payment App</h1>
+    </div>
+  );
+}
+
+export default App;
+```
+
+```javascript Vue
+import PayMayaSDK from 'paymaya-js-sdk';
+
+export default {
+  name: 'PaymentComponent',
+  mounted() {
+    // Initialize SDK when component mounts
+    PayMayaSDK.init('your-public-key', true);
+  }
+}
+```
+
+</CodeGroup>
+
+### Global Variable (CDN)
+
+When using the CDN approach, access the SDK through the global `PayMayaSDK` variable:
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <title>PayMaya Integration</title>
+  <script src="https://unpkg.com/paymaya-js-sdk@2.0.1/dist/bundle.js"></script>
+</head>
+<body>
+  <button id="pay-button">Pay Now</button>
+
+  <script>
+    // Initialize the SDK
+    PayMayaSDK.init('your-public-key', true);
+
+    // Use SDK methods
+    document.getElementById('pay-button').addEventListener('click', () => {
+      const paymentData = {
+        totalAmount: {
+          value: '100',
+          currency: 'PHP'
+        },
+        requestReferenceNumber: '123456',
+        metadata: {},
+        redirectUrl: {
+          success: 'https://yoursite.com/success',
+          failure: 'https://yoursite.com/failure',
+          cancel: 'https://yoursite.com/cancel'
+        }
+      };
+
+      PayMayaSDK.createSinglePayment(paymentData);
+    });
+  </script>
+</body>
+</html>
+```
+
+<Tip>
+For TypeScript projects, the SDK's type definitions are automatically recognized when installed via npm, yarn, or pnpm.
+</Tip>
+
+## TypeScript Configuration
+
+If you're using TypeScript, ensure your `tsconfig.json` includes the following settings:
+
+```json tsconfig.json
+{
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true
+  }
+}
+```
+
+## Verification
+
+To verify the installation was successful, check that you can import and initialize the SDK without errors:
+
+<CodeGroup>
+
+```javascript Test Import
+import PayMayaSDK from 'paymaya-js-sdk';
+
+console.log(PayMayaSDK); // Should output the SDK object
+```
+
+```html Test CDN
+<script src="https://unpkg.com/paymaya-js-sdk@2.0.1/dist/bundle.js"></script>
+<script>
+  console.log(PayMayaSDK); // Should output the SDK object
+</script>
+```
+
+</CodeGroup>
+
+## Next Steps
+
+Now that you have the SDK installed, proceed to the Quick Start guide to create your first payment.
+
+<Card title="Quick Start" icon="rocket" href="/quickstart">
+  Learn how to create your first payment with PayMaya JS SDK
+</Card>

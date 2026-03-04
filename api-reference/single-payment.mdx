@@ -1,0 +1,162 @@
+---
+title: 'createSinglePayment()'
+description: 'Create a single payment redirect for transaction finalization'
+---
+
+## Method Signature
+
+```typescript
+createSinglePayment(singlePaymentRequestObject: CreateSinglePaymentObject): Promise<void>
+```
+
+This method creates a single payment redirection, allowing the user to finalize the transaction. The method accepts a single payment request object and returns a promise that resolves when the redirect is initiated.
+
+## Parameters
+
+<ParamField path="singlePaymentRequestObject" type="CreateSinglePaymentObject" required>
+  The single payment request object
+
+  <Expandable title="properties">
+    <ParamField path="totalAmount" type="object" required>
+      Total amount information for the payment
+      
+      <Expandable title="properties">
+        <ParamField path="currency" type="string" required>
+          Currency code for the transaction (e.g., "PHP")
+        </ParamField>
+        
+        <ParamField path="value" type="string" required>
+          The payment amount value as a string
+        </ParamField>
+      </Expandable>
+    </ParamField>
+
+    <ParamField path="success" type="string">
+      URL to redirect user after successful payment
+    </ParamField>
+
+    <ParamField path="failure" type="string">
+      URL to redirect user after failed payment
+    </ParamField>
+
+    <ParamField path="cancel" type="string">
+      URL to redirect user after cancelled payment
+    </ParamField>
+
+    <ParamField path="requestReferenceNumber" type="string" required>
+      Unique reference number for this payment request
+    </ParamField>
+
+    <ParamField path="metadata" type="object" required>
+      Additional metadata for the payment transaction. Can be an empty object.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+## Returns
+
+<ResponseField name="response" type="Promise<void>">
+  The method automatically redirects the user to the PayMaya single payment page. The promise resolves when the redirect is initiated.
+</ResponseField>
+
+## Example Usage
+
+```javascript
+import paymaya from 'paymaya-js-sdk';
+
+// Initialize the SDK first
+paymaya.init('your-public-key', true);
+
+// Create single payment
+const singlePaymentObject = {
+  totalAmount: {
+    currency: "PHP",
+    value: "100.00"
+  },
+  success: "https://www.merchantsite.com/success",
+  failure: "https://www.merchantsite.com/failure",
+  cancel: "https://www.merchantsite.com/cancel",
+  requestReferenceNumber: "1551191041",
+  metadata: {}
+};
+
+await paymaya.createSinglePayment(singlePaymentObject);
+```
+
+## React Example
+
+```jsx
+import { useEffect } from 'react';
+import paymaya from 'paymaya-js-sdk';
+
+function SinglePaymentComponent() {
+  useEffect(() => {
+    paymaya.init('your-public-key', true);
+  }, []);
+
+  const handlePayment = async (amount) => {
+    const singlePaymentObject = {
+      totalAmount: {
+        currency: "PHP",
+        value: amount.toFixed(2)
+      },
+      success: "https://www.merchantsite.com/success",
+      failure: "https://www.merchantsite.com/failure",
+      cancel: "https://www.merchantsite.com/cancel",
+      requestReferenceNumber: Date.now().toString(),
+      metadata: {
+        orderId: "ORD-12345",
+        customerId: "CUST-67890"
+      }
+    };
+
+    await paymaya.createSinglePayment(singlePaymentObject);
+  };
+
+  return (
+    <button onClick={() => handlePayment(100)}>
+      Pay ₱100.00
+    </button>
+  );
+}
+```
+
+## Vanilla JavaScript Example
+
+```html
+<script src="https://unpkg.com/paymaya-js-sdk@2.0.1/dist/bundle.js"></script>
+<script>
+  // Initialize SDK
+  PayMayaSDK.init('your-public-key', true);
+
+  // Create single payment
+  const singlePaymentObject = {
+    totalAmount: {
+      currency: "PHP",
+      value: "100.00"
+    },
+    success: "https://www.merchantsite.com/success",
+    failure: "https://www.merchantsite.com/failure",
+    cancel: "https://www.merchantsite.com/cancel",
+    requestReferenceNumber: "1551191041",
+    metadata: {}
+  };
+
+  PayMayaSDK.createSinglePayment(singlePaymentObject);
+</script>
+```
+
+## Interface Reference
+
+For complete TypeScript interface definitions, see:
+- [CreateSinglePaymentObject](https://github.com/PayMaya/PayMaya-JS-SDK-v2/blob/master/src/interfaces.ts#L15-L22) in `src/interfaces.ts:15`
+- [RedirectUrls](https://github.com/PayMaya/PayMaya-JS-SDK-v2/blob/master/src/interfaces.ts#L97-L101) in `src/interfaces.ts:97`
+
+## Notes
+
+- The SDK must be initialized with `init()` before calling this method
+- The method will throw an error if the SDK is not properly initialized
+- The `totalAmount.value` should be a string representation of the amount
+- All redirect URLs are optional but recommended for handling different payment outcomes
+- The `requestReferenceNumber` should be unique for each payment request
+- Use the metadata object to store additional information about the transaction that you want to retrieve later

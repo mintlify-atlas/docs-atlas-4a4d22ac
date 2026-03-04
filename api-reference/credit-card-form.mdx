@@ -1,0 +1,246 @@
+---
+title: 'createCreditCardForm()'
+description: 'Embed a secure credit card form in your application to collect payment information'
+---
+
+## Method Signature
+
+```typescript
+createCreditCardForm(
+  targetHtmlElement: HTMLElement,
+  options?: CreditCardFormOptions
+): PayMayaSDK
+```
+
+## Overview
+
+The `createCreditCardForm()` method creates and embeds a secure credit card form as an iframe in your application. This iframe-based approach ensures that sensitive card information never touches your servers, maintaining PCI compliance while providing a seamless user experience.
+
+The method returns the SDK instance, allowing for method chaining with `addTransactionHandler()`.
+
+## Parameters
+
+<ParamField path="targetHtmlElement" type="HTMLElement" required>
+  The DOM element where the credit card form iframe will be embedded. Must be a valid HTMLElement instance.
+</ParamField>
+
+<ParamField path="options" type="CreditCardFormOptions" optional>
+  Configuration options to customize the appearance and behavior of the credit card form.
+</ParamField>
+
+### CreditCardFormOptions
+
+<ParamField path="buttonText" type="string">
+  Custom text for the payment submit button.
+  
+  **Example:** `"Pay Now"`, `"Complete Payment"`, `"Submit"`
+</ParamField>
+
+<ParamField path="buttonColor" type="string">
+  Background color of the submit button. Accepts any valid CSS color value.
+  
+  **Example:** `"#007bff"`, `"rgb(0, 123, 255)"`, `"blue"`
+</ParamField>
+
+<ParamField path="buttonTextColor" type="string">
+  Text color of the submit button. Accepts any valid CSS color value.
+  
+  **Example:** `"#ffffff"`, `"white"`, `"rgb(255, 255, 255)"`
+</ParamField>
+
+<ParamField path="showLogo" type="boolean">
+  Whether to display the PayMaya logo in the form.
+  
+  **Default:** Implementation dependent
+</ParamField>
+
+## How It Works
+
+When called, this method:
+
+1. Validates that the SDK has been initialized via `init()`
+2. Checks that `targetHtmlElement` is a valid HTMLElement
+3. Creates an iframe element with the ID `paymaya-card-form`
+4. Sets the iframe source to the PayMaya card form URL with:
+   - Environment configuration (sandbox or production)
+   - Your public API key
+   - Serialized options object
+5. Appends the iframe to the specified target element
+6. Returns the SDK instance for method chaining
+
+<Note>
+  The credit card form is hosted on PayMaya's secure servers. Card data is collected and tokenized entirely within the iframe, ensuring your application never handles sensitive payment information directly.
+</Note>
+
+## Usage with Transaction Handler
+
+The `createCreditCardForm()` method is designed to work in conjunction with `addTransactionHandler()`. After embedding the form, you must set up a transaction handler to receive the payment token when the user submits their card information.
+
+```javascript
+import PayMaya from 'paymaya-js-sdk';
+
+// Initialize the SDK
+PayMaya.init('pk-test-your-public-key', true);
+
+// Get the container element
+const container = document.getElementById('card-form-container');
+
+// Create the credit card form with custom options
+PayMaya.createCreditCardForm(container, {
+  buttonText: 'Pay Securely',
+  buttonColor: '#28a745',
+  buttonTextColor: '#ffffff',
+  showLogo: true
+});
+
+// Add transaction handler to receive the payment token
+PayMaya.addTransactionHandler((paymentTokenId) => {
+  console.log('Payment token received:', paymentTokenId);
+  
+  // Send the token to your server for processing
+  fetch('/process-payment', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ tokenId: paymentTokenId })
+  });
+});
+```
+
+## Complete Integration Example
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Credit Card Payment</title>
+  <style>
+    #card-form-container {
+      max-width: 500px;
+      margin: 50px auto;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
+    
+    #card-form-container iframe {
+      width: 100%;
+      height: 400px;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="card-form-container"></div>
+  
+  <script src="paymaya-js-sdk.js"></script>
+  <script>
+    // Initialize SDK in sandbox mode
+    PayMaya.init('pk-test-your-public-key-here', true);
+    
+    // Get container element
+    const container = document.getElementById('card-form-container');
+    
+    // Create form with custom branding
+    PayMaya.createCreditCardForm(container, {
+      buttonText: 'Complete Payment',
+      buttonColor: '#1a73e8',
+      buttonTextColor: '#ffffff',
+      showLogo: true
+    });
+    
+    // Handle the payment token
+    PayMaya.addTransactionHandler((paymentTokenId) => {
+      // Token received - now process on your server
+      processPayment(paymentTokenId);
+    });
+    
+    function processPayment(tokenId) {
+      // Send to your backend for payment processing
+      fetch('/api/payments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tokenId: tokenId,
+          amount: 1000.00,
+          currency: 'PHP',
+          description: 'Order #12345'
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === 'PAYMENT_SUCCESS') {
+          window.location.href = '/success';
+        } else {
+          alert('Payment failed. Please try again.');
+        }
+      })
+      .catch(error => {
+        console.error('Payment error:', error);
+        alert('An error occurred. Please try again.');
+      });
+    }
+  </script>
+</body>
+</html>
+```
+
+## Method Chaining
+
+Since `createCreditCardForm()` returns the SDK instance, you can chain it with `addTransactionHandler()`:
+
+```javascript
+PayMaya.createCreditCardForm(container, {
+  buttonText: 'Pay Now',
+  buttonColor: '#007bff',
+  buttonTextColor: '#ffffff',
+  showLogo: true
+}).addTransactionHandler((paymentTokenId) => {
+  // Handle the payment token
+  console.log('Token:', paymentTokenId);
+});
+```
+
+<Warning>
+  **Security Best Practice:** The payment token received from the transaction handler should be sent to your server immediately. Never store payment tokens in browser storage (localStorage, sessionStorage, etc.) or expose them in client-side code longer than necessary.
+</Warning>
+
+## Error Handling
+
+The method includes built-in error handling:
+
+- Throws an error if `init()` has not been called first
+- Validates that `targetHtmlElement` is a valid HTMLElement instance
+- Logs errors to the console if validation fails
+
+```javascript
+try {
+  const container = document.getElementById('card-form-container');
+  
+  if (!container) {
+    throw new Error('Container element not found');
+  }
+  
+  PayMaya.createCreditCardForm(container, {
+    buttonText: 'Pay Now',
+    buttonColor: '#007bff',
+    buttonTextColor: '#ffffff',
+    showLogo: true
+  });
+} catch (error) {
+  console.error('Failed to create credit card form:', error);
+  // Show user-friendly error message
+}
+```
+
+## Related Methods
+
+- [addTransactionHandler()](/api-reference/transaction-handler) - Required to receive payment tokens from the form
+- [init()](/api-reference/initialization) - Must be called before creating the form
+
+## Next Steps
+
+After embedding the credit card form:
+
+1. Set up a [transaction handler](/api-reference/transaction-handler) to receive payment tokens
+2. Implement server-side payment processing using the received token
+3. Handle success and failure scenarios in your application

@@ -1,0 +1,313 @@
+---
+title: 'Error Handling'
+description: 'Learn how to handle errors and exceptions in the PayMaya JS SDK'
+---
+
+## Overview
+
+The PayMaya JS SDK uses a combination of try-catch blocks and promise-based error handling to manage errors gracefully. Understanding these patterns will help you build robust payment integrations.
+
+## Error Types
+
+### Initialization Errors
+
+These occur when the SDK is not properly initialized before use.
+
+```javascript
+// Error: "You must first run init() method!"
+paymaya.createCheckout(checkoutObject);
+```
+
+**Solution:**
+
+```javascript
+// Always initialize first
+paymaya.init('pk-your-public-key', true);
+paymaya.createCheckout(checkoutObject);
+```
+
+### API Request Errors
+
+These occur when API calls fail due to invalid data, network issues, or server errors.
+
+<CodeGroup>
+
+```javascript Checkout Error
+import paymaya from 'paymaya-js-sdk';
+
+async function handleCheckout(checkoutData) {
+  paymaya.init('pk-Z0OSzLvIcOI2UIvDhdTGVVfRSSeiGStnceqwUE7n0Ah', true);
+  
+  await paymaya.createCheckout(checkoutData)
+    .then(() => {
+      console.log('Redirecting to checkout...');
+    })
+    .catch((error) => {
+      console.error('Checkout failed:', error);
+      // Handle error - show message to user
+    });
+}
+```
+
+```javascript Single Payment Error
+import paymaya from 'paymaya-js-sdk';
+
+async function handleSinglePayment(paymentData) {
+  paymaya.init('pk-MOfNKu3FmHMVHtjyjG7vhr7vFevRkWxmxYL1Yq6iFk5', true);
+  
+  await paymaya.createSinglePayment(paymentData)
+    .then(() => {
+      console.log('Redirecting to payment...');
+    })
+    .catch((error) => {
+      console.error('Payment failed:', error);
+      // Handle error appropriately
+    });
+}
+```
+
+```javascript Wallet Link Error
+import paymaya from 'paymaya-js-sdk';
+
+async function handleWalletLink(walletData) {
+  paymaya.init('pk-MOfNKu3FmHMVHtjyjG7vhr7vFevRkWxmxYL1Yq6iFk5', true);
+  
+  await paymaya.createWalletLink(walletData)
+    .then(() => {
+      console.log('Redirecting to wallet link...');
+    })
+    .catch((error) => {
+      console.error('Wallet link failed:', error);
+      // Handle error
+    });
+}
+```
+
+</CodeGroup>
+
+### Credit Card Form Errors
+
+Errors related to the embedded credit card form.
+
+```javascript
+import paymaya from 'paymaya-js-sdk';
+
+try {
+  paymaya.init('pk-MOfNKu3FmHMVHtjyjG7vhr7vFevRkWxmxYL1Yq6iFk5', true);
+  
+  const container = document.getElementById('iframe-container');
+  
+  if (!container) {
+    throw new Error('Container element not found');
+  }
+  
+  paymaya
+    .createCreditCardForm(container)
+    .addTransactionHandler((paymentTokenId) => {
+      console.log('Payment token received:', paymentTokenId);
+    });
+} catch (error) {
+  console.error('Credit card form error:', error);
+}
+```
+
+## Common Error Scenarios
+
+<Accordion title="Missing or Invalid Public Key">
+  **Error:** SDK not initialized or invalid credentials
+
+  **Cause:** The `init()` method wasn't called or was called with an invalid key
+
+  **Solution:**
+  ```javascript
+  // Ensure init is called with valid key
+  paymaya.init('pk-valid-public-key', true);
+  ```
+</Accordion>
+
+<Accordion title="Invalid Request Data">
+  **Error:** API returns 400 or validation error
+
+  **Cause:** Request object is missing required fields or contains invalid data
+
+  **Solution:**
+  ```javascript
+  // Ensure all required fields are present
+  const checkoutData = {
+    totalAmount: {
+      value: 100,
+      currency: 'PHP'
+    },
+    items: [{
+      name: 'Product Name',
+      quantity: 1,
+      totalAmount: { value: 100 }
+    }],
+    requestReferenceNumber: '1234567890',
+    redirectUrl: {
+      success: 'https://yoursite.com/success',
+      failure: 'https://yoursite.com/failure',
+      cancel: 'https://yoursite.com/cancel'
+    },
+    metadata: {}
+  };
+  ```
+</Accordion>
+
+<Accordion title="Network Errors">
+  **Error:** Request timeout or connection failure
+
+  **Cause:** Network connectivity issues or server unavailability
+
+  **Solution:**
+  ```javascript
+  await paymaya.createCheckout(data)
+    .catch((error) => {
+      if (error.message?.includes('network')) {
+        alert('Network error. Please check your connection.');
+      }
+    });
+  ```
+</Accordion>
+
+<Accordion title="Missing HTML Element">
+  **Error:** Cannot find target element for credit card form
+
+  **Cause:** The target HTML element doesn't exist in the DOM
+
+  **Solution:**
+  ```javascript
+  const container = document.getElementById('iframe-container');
+  if (container) {
+    paymaya.createCreditCardForm(container);
+  } else {
+    console.error('Container element not found');
+  }
+  ```
+</Accordion>
+
+## Real-World Error Handling Example
+
+This example from the SDK's example application shows comprehensive error handling:
+
+```javascript
+import React, { Component } from 'react';
+import paymaya from 'paymaya-js-sdk';
+
+class Checkout extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      loading: false,
+      errorResponse: {}
+    };
+  }
+
+  async createCheckout(checkoutData) {
+    this.setState({
+      loading: true,
+      errorResponse: {}
+    });
+
+    paymaya.init('pk-Z0OSzLvIcOI2UIvDhdTGVVfRSSeiGStnceqwUE7n0Ah', true);
+    
+    await paymaya.createCheckout(checkoutData)
+      .then(() => {
+        // Success - user will be redirected
+      })
+      .catch((err) => {
+        // Display error to user
+        this.setState({
+          errorResponse: err,
+          loading: false
+        });
+      });
+  }
+
+  render() {
+    const { errorResponse, loading } = this.state;
+    
+    return (
+      <div>
+        {Object.keys(errorResponse).length > 0 && (
+          <div style={{ backgroundColor: 'red', color: '#ffffff' }}>
+            <pre>{JSON.stringify(errorResponse, null, 2)}</pre>
+          </div>
+        )}
+        {loading && <img src="/img/loading.gif" alt="Loading..." />}
+      </div>
+    );
+  }
+}
+```
+
+## Error Response Structure
+
+When an API call fails, the SDK throws the error response object. The structure typically includes:
+
+```json
+{
+  "code": "ERROR_CODE",
+  "message": "Human-readable error message",
+  "details": [
+    {
+      "field": "fieldName",
+      "issue": "Description of the issue"
+    }
+  ]
+}
+```
+
+## Best Practices
+
+<Note>
+  - Always wrap SDK calls in try-catch blocks or use `.catch()` for promises
+  - Display user-friendly error messages instead of raw error objects
+  - Log errors for debugging but don't expose sensitive information
+  - Implement loading states to prevent duplicate requests
+  - Validate data before sending to the SDK
+  - Test error scenarios in sandbox environment
+</Note>
+
+### Loading State Pattern
+
+```javascript
+const [loading, setLoading] = useState(false);
+const [error, setError] = useState(null);
+
+const handlePayment = async () => {
+  setLoading(true);
+  setError(null);
+
+  try {
+    await paymaya.createCheckout(checkoutData);
+  } catch (err) {
+    setError(err.message || 'Payment failed. Please try again.');
+  } finally {
+    setLoading(false);
+  }
+};
+```
+
+## Debugging Tips
+
+<Warning>
+  Check the browser console for detailed error messages. The SDK logs errors using `console.error()`.
+</Warning>
+
+1. **Enable verbose logging** during development
+2. **Verify initialization** before making API calls
+3. **Validate request data** against the API documentation
+4. **Test in sandbox** before going to production
+5. **Monitor network requests** in browser DevTools
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Examples" icon="code" href="/guides/examples">
+    See real-world implementation examples
+  </Card>
+  <Card title="API Reference" icon="book" href="/api-reference/checkout">
+    Explore the complete API documentation
+  </Card>
+</CardGroup>

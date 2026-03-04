@@ -1,0 +1,110 @@
+---
+title: 'createWalletLink()'
+description: 'Create a wallet link to enable PayMaya account charging'
+---
+
+## Method Signature
+
+```typescript
+createWalletLink(walletLinkRequestObject: CreateWalletLinkObject): Promise<void>
+```
+
+This method creates a wallet link that allows charging to a PayMaya account. The method accepts a wallet link request object and returns a promise that resolves when the redirect to the wallet link page is initiated.
+
+## Parameters
+
+<ParamField path="walletLinkRequestObject" type="CreateWalletLinkObject" required>
+  The wallet link request object
+
+  <Expandable title="properties">
+    <ParamField path="success" type="string">
+      URL to redirect user after successful wallet linking
+    </ParamField>
+
+    <ParamField path="failure" type="string">
+      URL to redirect user after failed wallet linking
+    </ParamField>
+
+    <ParamField path="cancel" type="string">
+      URL to redirect user after cancelled wallet linking
+    </ParamField>
+
+    <ParamField path="requestReferenceNumber" type="string" required>
+      Unique reference number for this wallet link request
+    </ParamField>
+
+    <ParamField path="metadata" type="object" required>
+      Additional metadata for the wallet link transaction. Can be an empty object.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+## Returns
+
+<ResponseField name="response" type="Promise<void>">
+  The method automatically redirects the user to the PayMaya wallet link page. The promise resolves when the redirect is initiated.
+</ResponseField>
+
+## Example Usage
+
+```javascript
+import paymaya from 'paymaya-js-sdk';
+
+// Initialize the SDK first
+paymaya.init('your-public-key', true);
+
+// Create wallet link
+const walletLinkObject = {
+  success: "https://www.merchantsite.com/success",
+  failure: "https://www.merchantsite.com/failure",
+  cancel: "https://www.merchantsite.com/cancel",
+  requestReferenceNumber: "1551191040",
+  metadata: {}
+};
+
+await paymaya.createWalletLink(walletLinkObject);
+```
+
+## React Example
+
+```jsx
+import { useEffect } from 'react';
+import paymaya from 'paymaya-js-sdk';
+
+function WalletLinkComponent() {
+  useEffect(() => {
+    paymaya.init('your-public-key', true);
+  }, []);
+
+  const handleWalletLink = async () => {
+    const walletLinkObject = {
+      success: "https://www.merchantsite.com/success",
+      failure: "https://www.merchantsite.com/failure",
+      cancel: "https://www.merchantsite.com/cancel",
+      requestReferenceNumber: Date.now().toString(),
+      metadata: { customerId: "12345" }
+    };
+
+    await paymaya.createWalletLink(walletLinkObject);
+  };
+
+  return (
+    <button onClick={handleWalletLink}>
+      Link PayMaya Wallet
+    </button>
+  );
+}
+```
+
+## Interface Reference
+
+For complete TypeScript interface definitions, see:
+- [CreateWalletLinkObject](https://github.com/PayMaya/PayMaya-JS-SDK-v2/blob/master/src/interfaces.ts#L10-L13) in `src/interfaces.ts:10`
+- [RedirectUrls](https://github.com/PayMaya/PayMaya-JS-SDK-v2/blob/master/src/interfaces.ts#L97-L101) in `src/interfaces.ts:97`
+
+## Notes
+
+- The SDK must be initialized with `init()` before calling this method
+- The method will throw an error if the SDK is not properly initialized
+- All redirect URLs are optional but recommended for handling different payment outcomes
+- The `requestReferenceNumber` should be unique for each wallet link request
