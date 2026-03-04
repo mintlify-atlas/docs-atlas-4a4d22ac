@@ -1,0 +1,76 @@
+{
+  "projectType": "sdk-library",
+  "projectName": "PayMaya JS SDK",
+  "projectDescription": "Official client-side JavaScript SDK for PayMaya Payment Gateway integration",
+  "theme": "palm",
+  "primaryColor": "#848484",
+  "lightColor": "#151515",
+  "darkColor": "#c0c0c0",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "installation",
+              "quickstart"
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              "guides/environment-setup",
+              "guides/error-handling",
+              "guides/examples"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Core",
+            "pages": [
+              "api-reference/initialization"
+            ]
+          },
+          {
+            "group": "Payment Methods",
+            "pages": [
+              "api-reference/checkout",
+              "api-reference/wallet-link",
+              "api-reference/single-payment"
+            ]
+          },
+          {
+            "group": "Credit Card",
+            "pages": [
+              "api-reference/credit-card-form",
+              "api-reference/transaction-handler"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Checkout API integration for complete payment flows",
+    "PayMaya Wallet linking for direct account charging",
+    "Single payment processing for one-time transactions",
+    "Secure credit card form with iframe embedding",
+    "Transaction callbacks and event handling",
+    "Sandbox and production environment support"
+  ],
+  "publicApiSurface": [
+    "init(publicKey, isSandbox)",
+    "createCheckout(checkoutRequestObject)",
+    "createWalletLink(walletLinkRequestObject)",
+    "createSinglePayment(singlePaymentRequestObject)",
+    "addTransactionHandler(callback)",
+    "createCreditCardForm(targetHtmlElement, options)"
+  ]
+}
